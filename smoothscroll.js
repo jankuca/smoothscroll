@@ -167,7 +167,20 @@
       cx = sx + (x - sx) * value;
       cy = sy + (y - sy) * value;
 
-      scrollElement(el, cx, cy);
+      var currentEl = el;
+      var totalDeltaApplied = 0;
+      do {
+        var prevScroll = currentEl.scrollTop;
+        scrollElement(currentEl, cx, cy - totalDeltaApplied);
+
+        totalDeltaApplied += (currentEl.scrollTop - prevScroll);
+
+        if (currentEl.parentNode.parentNode) {
+          currentEl = findScrollableParent(currentEl.parentNode);
+        } else {
+          currentEl = null;
+        }
+      } while (currentEl && Math.abs(cy) >= 1 && totalDeltaApplied < cy);
 
       // return if end points have been reached
       if (cx === x && cy === y) {
